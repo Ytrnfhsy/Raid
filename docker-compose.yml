@@ -1,0 +1,63 @@
+version: '3.5'
+services:
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.0
+    environment:
+      - ETCD_AUTO_COMPACTION_RETENTION=1
+      - ETCD_QUOTA_BACKEND_BYTES=4294967296
+    command: >
+      etcd --name milvus-etcd --data-dir /etcd-data --listen-client-urls http://0.0.0.0:2379
+      --advertise-client-urls http://etcd:2379 --listen-peer-urls http://0.0.0.0:2380
+      --initial-advertise-peer-urls http://etcd:2380 --initial-cluster milvus-etcd=http://etcd:2380
+      --initial-cluster-token etcd-cluster-1 --initial-cluster-state new
+    volumes:
+      - ./volumes/etcd_data:/etcd-data
+    networks:
+      - milvus-network
+    restart: always  # Додаємо політику перезапуску
+
+  minio:
+    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
+    environment:
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./volumes/minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - milvus-network
+    restart: always  # Додаємо політику перезапуску
+
+  milvus:
+    image: milvusdb/milvus:v2.3.0
+    environment:
+      - ETCD_ENDPOINTS=http://etcd:2379
+      - MINIO_ADDRESS=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_USE_SSL=false
+      - MSGSTREAM_TYPE=rocksmq  # Використовуємо RocksMQ замість Pulsar
+    depends_on:
+      - etcd
+      - minio
+    ports:
+      - "19530:19530"
+    command: ["milvus", "run", "standalone"]
+    volumes:
+      - ./volumes/milvus_data:/var/lib/milvus
+    networks:
+      - milvus-network
+    restart: always
+
+volumes:
+  etcd_data:
+  minio_data:
+  pulsar_data:
+  milvus_data:
+
+networks:
+  milvus-network:
+    driver: bridge

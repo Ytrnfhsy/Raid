@@ -1,0 +1,332 @@
+body {
+    background-color: #f8f9fa;
+}
+
+h1 {
+    font-family: 'Arial', sans-serif;
+    font-size: 28px;
+    text-align: center;
+}
+
+.card-text {
+    font-size: 12px;
+}
+
+.container {
+    margin-top: 20px;
+}
+
+/* Виправлений стиль для .card */
+.card {
+    position: relative; /* Додаємо позиціонування */
+    overflow: visible;  /* Дозволяємо переповнення */
+    margin-bottom: 10px; /* Зменшено з 200px */
+    border-radius: 10px;
+}
+
+.card-img-top {
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    background-color: #ffffff;
+}
+
+.progress {
+    height: 25px;
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+    line-height: 25px; /* Відповідає новій висоті прогрес-бару */
+    color: white;
+    font-weight: bold;
+}
+
+#scanProgressBar {
+    height: 20px;
+    background-color: #4caf50;
+    color: white;
+    text-align: center;
+    line-height: 20px;
+}
+
+ul#directories {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.form-check-label {
+    font-weight: bold;
+}
+
+.btn-info {
+    margin-top: 10px;
+}
+
+.card-img-top:hover {
+    transform: scale(1.05);
+}
+/* Стилі для модального вікна з зображенням */
+.modal-content img {
+    max-width: 100%;
+    max-height: calc(100vh - 200px); /* Віднімаємо висоту заголовка та відступів */
+    width: auto;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+
+/* Стилі для області завантаження зображення */
+.upload-area {
+    border: 2px dashed #ced4da;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 420px;
+    height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.upload-area.dragover {
+    background-color: #e9ecef;
+}
+
+.upload-area img {
+    max-width: 100%;
+    max-height: 100%;
+    display: none;
+}
+
+.upload-area img.active {
+    display: block;
+}
+
+/* Стилі для контейнера пошуку */
+.search-container {
+    display: flex;
+    gap: 20px;
+}
+
+.text-search {
+    flex: 1;
+}
+
+/* Стилі для повідомлень про помилки */
+.error-message {
+    color: red;
+    margin-top: 10px;
+    display: none;
+}
+
+/* Стилі для індикатора завантаження */
+.loading-indicator {
+    display: none;
+    margin-top: 10px;
+}
+
+/* Стилі для вибору часу сканування */
+.scan-time-entry {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.scan-time-entry input[type="time"] {
+    margin-right: 10px;
+}
+
+.remove-time-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#add-time-button {
+    margin-top: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#cropModal .modal-body {
+    text-align: center;
+    padding: 0px; /* Зменшено відступи */
+}
+
+#croppedImage {
+    max-width: 100%;
+}
+
+#cropModal .modal-dialog {
+    max-width: 500px; /* Встановіть бажану ширину */
+}
+
+/* Опціонально: зменшіть висоту зображення в модалі */
+#cropper-image {
+    max-height: 500px;
+    width: 100%;
+}
+
+/* Стилі для статистики файлів */
+#file-stats .list-group-item {
+    padding: 5px 5px;
+}
+
+#file-stats ul {
+    list-style-type: disc;
+    margin-left: 5px;
+}
+
+/* Додаткові стилі для карток статистики */
+.card-title i {
+    margin-right: 5px;
+}
+
+.card-text {
+    text-align: center;
+}
+
+.badge {
+    font-size: 1.2rem;
+}
+
+/* Стилі для списку форматів файлів */
+#files-by-format .list-group-item:first-child {
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Додаткові стилі для карток */
+.shadow-sm {
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    transition: box-shadow 0.2s;
+}
+
+/* Стилі для контейнера зображення */
+.image-container {
+    position: relative; /* Забезпечує контекст позиціонування */
+    width: 100%;
+    overflow: visible; /* Дозволяє переповнення */
+    z-index: 1; /* Низький z-index для контейнера */
+}
+
+/* Стилі для зображення */
+.image-container img {
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+    display: block;
+}
+
+/* Стилі для блоку інформації */
+.image-container .info {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%; /* Розташовуємо під зображенням */
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 9999; /* Високий z-index для перекриття інших елементів */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transform: translateY(-10px);
+}
+
+/* Відображення блоку .info при наведенні */
+.image-container:hover .info {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* Налаштування базового стану для картки */
+.image-card {
+    position: relative; /* Створюємо контекст позиціонування */
+    z-index: 1; /* Базовий z-index */
+    transition: z-index 0.3s ease; /* Плавний перехід */
+}
+
+/* Налаштування для картки при наведенні */
+.image-card:hover {
+    z-index: 1000; /* Високий z-index для перекриття інших елементів */
+}
+
+/* Стилі для блоку .info */
+.image-container .info {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%; /* Розташування під зображенням */
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 9999; /* Дуже високий z-index для перекриття */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transform: translateY(-10px);
+}
+
+#load-more-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#load-more-button {
+    position: relative;
+    z-index: 1; /* Забезпечує, що кнопка знаходиться вище за інші елементи з нижчим z-index */
+}
+
+/* Відображення блоку .info при наведенні */
+.image-container:hover .info {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.left-column {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    max-height: 100vh;
+    overflow-y: auto;
+}
+
+/* Стилі для кнопки "Вгору" */
+#scrollToTopBtn {
+    display: none; /* Прихована за замовчуванням */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    outline: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.3s;
+}
+
+#scrollToTopBtn:hover {
+    background-color: #0056b3;
+}

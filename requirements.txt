@@ -1,0 +1,10 @@
+flask
+pymilvus
+torch --index-url https://download.pytorch.org/whl/cu121
+pillow
+transformers
+flask_cors
+deep_translator
+apscheduler
+psd_tools
+flask_sqlalchemy

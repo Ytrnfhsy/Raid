@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raid - Пошук зображень</title>
+    <!-- Підключення Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Підключення Cropper.js CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <!-- Підключення Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Підключення власного CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+	<!-- Підключення Font Awesome CSS -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Додані стилі для липкої лівої колонки -->
+    <style>
+        .left-column {
+            position: sticky;
+            top: 0;
+            align-self: flex-start;
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4 text-center">Raid - Пошук зображень</h1>
+
+        <!-- Навігаційні вкладки для пошуку та налаштувань -->
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" id="defaultOpen" href="#" onclick="openTab(event, 'search')">Пошук</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="openTab(event, 'settings')">Налаштування</a>
+            </li>
+        </ul>
+
+        <!-- Вкладка Пошуку -->
+        <div id="search" class="tab-content">
+            <div class="row align-items-start">
+                <!-- Ліва частина: Область завантаження зображення -->
+                <div class="col-md-4 left-column">
+                    <h2>Пошук за зображенням</h2>
+                    <div class="upload-area" id="upload-area">
+                        <span>Перетягніть зображення сюди<br>або клікніть для завантаження</span>
+                        <input type="file" id="image-input" accept="image/*" style="display: none;">
+                        <img id="preview-image" src="#" alt="Попередній перегляд">
+                        <div id="upload-error" class="error-message">Будь ласка, завантажте дійсне зображення.</div>
+                        <div id="loading-indicator" class="loading-indicator spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Завантаження...</span>
+                        </div>
+                    </div>
+
+                    <!-- Секція зі статистикою -->
+                    <div class="mt-4">
+                        <h4>Статистика файлів</h4>
+                        <div id="file-stats" class="row">
+                            <!-- Лівий стовпець для "Файли за форматами" -->
+                            <div class="col-md-6">
+                                <div class="card shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-center">
+                                            <i class="fas fa-chart-pie"></i> Файли за форматами
+                                        </h5>
+                                        <ul id="files-by-format" class="list-group list-group-flush">
+                                            <!-- Динамічний вміст -->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Правий стовпець для інших карток -->
+                            <div class="col-md-6">
+                                <div class="row h-100">
+                                    <!-- Картка "Загальна кількість файлів" -->
+                                    <div class="col-md-12 mb-3">
+                                        <div class="card shadow-sm h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-center">
+                                                    <i class="fas fa-file-alt"></i> Загальна кількість файлів
+                                                </h5>
+                                                <p class="card-text text-center">
+                                                    <span id="total-files" class="badge bg-primary fs-4">0</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Картка "Файлів додано сьогодні" -->
+                                    <div class="col-md-12 mb-3">
+                                        <div class="card shadow-sm h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-center">
+                                                    <i class="fas fa-calendar-day"></i> Файлів додано сьогодні
+                                                </h5>
+                                                <p class="card-text text-center">
+                                                    <span id="files-today" class="badge bg-success fs-4">0</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Картка "Найпопулярніший формат" -->
+                                    <div class="col-md-12 mb-3">
+                                        <div class="card shadow-sm h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-center">
+                                                    <i class="fas fa-star"></i> Найпопулярніший формат
+                                                </h5>
+                                                <p class="card-text text-center">
+                                                    <span id="most-common-format" class="badge bg-warning fs-4">-</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Додайте інші картки за потребою -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Права частина: Текстовий пошук та результати -->
+                <div class="col-md-8">
+                    <h2>Пошук за текстом</h2>
+                    <!-- Форма для пошуку за текстом -->
+                    <form id="text-search-form" class="mb-4">
+                        <div class="input-group text-search">
+                            <input type="text" name="text_query" id="text-query" class="form-control" placeholder="Введіть опис зображення" required>
+                            <button type="submit" class="btn btn-primary">Пошук</button>
+                        </div>
+                    </form>
+
+                    <!-- Розділ результатів -->
+                    <div class="results-section" id="results-section">
+                        <div id="results-container">
+                            <p>Ще немає результатів.</p>
+                        </div>
+                        <button id="load-more-button" class="btn btn-primary" style="display: none;">Завантажити ще</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладка Налаштувань -->
+        <div id="settings" class="tab-content" style="display:none;">
+            <h2>Налаштування</h2>
+
+            <!-- Форма для додавання директорії -->
+            <form action="/add_directory" method="POST" class="mb-4">
+                <div class="input-group">
+                    <input type="text" name="directory" placeholder="Введіть шлях до теки" class="form-control" required>
+                    <button type="submit" class="btn btn-success">Додати теку</button>
+                </div>
+            </form>
+
+            <!-- Список поточних директорій з прогрес-баром -->
+            <ul class="list-group mb-4" id="directories-list">
+                {% if directories %}
+                    {% for directory in directories %}
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ directory }}</strong>
+                                    <div class="progress mt-2">
+                                        <div class="progress-bar bg-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="progress-{{ loop.index }}" style="width: 0%;">0%</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <!-- Кнопки керування скануванням -->
+                                    <button id="start-scan-button-{{ loop.index }}" class="btn btn-primary btn-sm">Сканувати</button>
+                                    <button id="stop-scan-button-{{ loop.index }}" class="btn btn-danger btn-sm" style="display: none;">Зупинити</button>
+                                    <!-- Форма для видалення директорії -->
+                                    <form action="/delete_directory" method="POST" class="d-inline">
+                                        <input type="hidden" name="directory" value="{{ directory }}">
+                                        <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <p>Немає доданих тек.</p>
+                {% endif %}
+            </ul>
+
+            <!-- Форма для налаштувань -->
+            <form id="settings-form" method="POST" action="{{ url_for('update_settings') }}">
+                <!-- Поріг схожості -->
+                <div class="input-group mb-4">
+                    <span class="input-group-text" id="similarity_threshold_label">Поріг подібності</span>
+                    <input type="number" name="similarity_threshold" id="similarity_threshold" step="0.01" value="{{ similarity_threshold }}" min="0" max="1" class="form-control" required>
+                </div>
+
+                <!-- Максимальна кількість результатів -->
+                <div class="input-group mb-4">
+                    <span class="input-group-text" id="max_results_label">Кількість результатів</span>
+                    <input type="number" name="max_results" id="max_results" value="{{ max_results }}" min="1" class="form-control" required>
+                </div>
+
+                <!-- Вибір часу сканування -->
+                <div class="mb-4">
+                    <label>Час сканування:</label>
+                    <div id="scan-times-container">
+                        {% for time in scan_times %}
+                            <div class="scan-time-entry">
+                                <input type="time" name="scan_times" value="{{ time }}">
+                                <button type="button" class="remove-time-button">Видалити</button>
+                            </div>
+                        {% endfor %}
+                        {% if not scan_times %}
+                            <div class="scan-time-entry">
+                                <input type="time" name="scan_times">
+                                <button type="button" class="remove-time-button">Видалити</button>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <button type="button" id="add-time-button">Додати час</button>
+                </div>
+
+                <!-- Рекурсивне відстеження -->
+                <div class="form-check mb-2">
+                    <input type="checkbox" class="form-check-input" id="recursive_scan" name="recursive_scan" {% if recursive_scan %}checked{% endif %}>
+                    <label class="form-check-label" for="recursive_scan">Рекурсивне сканування</label>
+                </div>
+
+                <!-- Кнопка для збереження налаштувань -->
+                <button type="submit" class="btn btn-primary mt-3">Зберегти</button>
+
+                <!-- Розділ журналу -->
+                <h3 class="mt-4">Журнал</h3>
+                <textarea id="logs" rows="10" class="form-control" readonly></textarea>
+                <button type="button" class="btn btn-danger mt-2 mb-5" onclick="clearLogs()">Очистити</button>
+            </form>
+        </div>
+
+        <!-- Модальне вікно для повного зображення -->
+        <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Повне зображення</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+              </div>
+              <div class="modal-body">
+                <img id="modalImage" src="" alt="Повне зображення">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Модальне вікно для відновлення сканування -->
+        <div class="modal fade" id="resumeModal" tabindex="-1" aria-labelledby="resumeModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form id="resume-form" method="POST" action="{{ url_for('handle_saved_scan_state') }}">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="resumeModalLabel">Відновити сканування</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+                </div>
+                <div class="modal-body">
+                  <p>Є збережений стан сканування для цієї директорії. Бажаєте відновити сканування?</p>
+                  <input type="hidden" name="directory" id="modal-directory" value="">
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" name="action" value="resume" class="btn btn-success">Відновити</button>
+                  <button type="submit" name="action" value="discard" class="btn btn-danger">Скасувати</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Модальне вікно для кадрування зображення -->
+        <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="cropModalLabel">Кадрування зображення</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+              </div>
+              <div class="modal-body">
+                <img id="cropper-image" src="" alt="Завантажене зображення">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                <button type="button" class="btn btn-primary" id="crop-button">Кадрувати та шукати</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+		<!-- Кнопка "Вгору" -->
+        <button id="scrollToTopBtn" title="Повернутися вгору"><i class="fas fa-arrow-up"></i></button>
+
+        <!-- Глобальні змінні JavaScript -->
+        <script>
+            window.appConfig = {
+                thumbnailsBaseUrl: "{{ url_for('static', filename='thumbnails/') }}",
+                serveImageBaseUrl: "/image/",
+                maxResultsPerPage: {{ max_results }},
+                directories: {{ directories | tojson | safe }}
+            };
+        </script>
+
+        <!-- Підключення Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Підключення Cropper.js JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+        <!-- Підключення main.js -->
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    </div>
+</body>
+</html>
