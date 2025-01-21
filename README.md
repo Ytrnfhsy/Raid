@@ -35,7 +35,7 @@ This project is a web-based application for managing and searching images using 
    cd Raid
    ```
 
-2. Run Install.bat (Windows) or Install.sh (Linux)
+2. Run `Install.bat` (Windows) or `Install.sh` (Linux)
 
 3. Install Milvus using docker-compose.yml
     ```
@@ -43,7 +43,7 @@ This project is a web-based application for managing and searching images using 
     
     ```
 
-4. Run Start.bat (Windows) or Start.sh (Linux)
+4. Run `Start.bat` (Windows) or `Start.sh` (Linux)
 
 ## Configuration
 The application uses configuration files for customizable parameters.
