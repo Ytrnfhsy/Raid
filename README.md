@@ -40,10 +40,11 @@ This project is a web-based application for managing and searching images using 
 3. Install Milvus using docker-compose.yml
     ```
     docker-compose up -d 
-    
     ```
 
 4. Run `Start.bat` (Windows) or `Start.sh` (Linux)
+
+5. Open your browser to `http://localhost:5000`
 
 ## Configuration
 The application uses configuration files for customizable parameters.
